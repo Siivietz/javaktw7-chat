@@ -9,7 +9,7 @@
         <module name="javaktw7-chat" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="8">
       <module name="javaktw7-chat" target="1.5" />
     </bytecodeTargetLevel>
   </component>
