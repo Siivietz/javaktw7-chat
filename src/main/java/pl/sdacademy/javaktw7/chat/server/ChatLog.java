@@ -1,19 +1,23 @@
 package pl.sdacademy.javaktw7.chat.server;
 
 import pl.sdacademy.javaktw7.chat.model.ChatMessage;
+import pl.sdacademy.javaktw7.chat.model.DatedChatMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ChatLog {
 
     private Map<Socket, ObjectOutputStream> clientConnections;
+    private SimpleDateFormat dateFormatter;
 
     public ChatLog(){
         clientConnections = new LinkedHashMap<>();
+       dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
     public boolean register(Socket newClient) {
         try {
@@ -38,8 +42,28 @@ public class ChatLog {
         return false;
     }
 
-    private void acceptMessage(ChatMessage chatMessage) {
+    public void acceptMessage(ChatMessage message) {
+        DatedChatMessage datedChatMessage = new DatedChatMessage(message);
+        String formattedDate = dateFormatter.format(datedChatMessage.getReceiveDate());
+
+        System.out.println("Data: " + datedChatMessage.getReceiveDate() + " Autor: " + datedChatMessage.getAuthor()
+                + "Wiadomość: " + datedChatMessage.getMessage());
+
 
 
     }
-}
+
+    private void updateObservers(DatedChatMessage datedChatMessage){
+        for (ObjectOutputStream objectOutputStream : clientConnections.values()) {
+            try {
+                objectOutputStream.writeObject(datedChatMessage);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                System.out.println("### could not sent message to client" + e.getMessage());
+            }
+        }
+
+        }
+    }
+
+
